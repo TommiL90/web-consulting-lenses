@@ -1,3 +1,5 @@
+import { env } from "@/env";
+
 export type ApiErrorResponse = {
   error: {
     statusCode: number;
@@ -38,8 +40,8 @@ type ApiFetchOptions = Omit<RequestInit, "body"> & {
   >;
 };
 
-export const API_BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "/api";
+
+export const API_BASE_URL = env.VITE_API_BASE_URL as string;
 
 function buildUrl(path: string, searchParams?: ApiFetchOptions["searchParams"]) {
   const normalizedBase = API_BASE_URL.endsWith("/")

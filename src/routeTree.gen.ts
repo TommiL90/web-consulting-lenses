@@ -10,12 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as GestionRouteImport } from './routes/gestion'
+import { Route as ExampleRouteImport } from './routes/example'
 import { Route as CotizadorRouteImport } from './routes/cotizador'
 import { Route as IndexRouteImport } from './routes/index'
 
 const GestionRoute = GestionRouteImport.update({
   id: '/gestion',
   path: '/gestion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExampleRoute = ExampleRouteImport.update({
+  id: '/example',
+  path: '/example',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CotizadorRoute = CotizadorRouteImport.update({
@@ -32,30 +38,34 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cotizador': typeof CotizadorRoute
+  '/example': typeof ExampleRoute
   '/gestion': typeof GestionRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cotizador': typeof CotizadorRoute
+  '/example': typeof ExampleRoute
   '/gestion': typeof GestionRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cotizador': typeof CotizadorRoute
+  '/example': typeof ExampleRoute
   '/gestion': typeof GestionRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cotizador' | '/gestion'
+  fullPaths: '/' | '/cotizador' | '/example' | '/gestion'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cotizador' | '/gestion'
-  id: '__root__' | '/' | '/cotizador' | '/gestion'
+  to: '/' | '/cotizador' | '/example' | '/gestion'
+  id: '__root__' | '/' | '/cotizador' | '/example' | '/gestion'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CotizadorRoute: typeof CotizadorRoute
+  ExampleRoute: typeof ExampleRoute
   GestionRoute: typeof GestionRoute
 }
 
@@ -66,6 +76,13 @@ declare module '@tanstack/react-router' {
       path: '/gestion'
       fullPath: '/gestion'
       preLoaderRoute: typeof GestionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/example': {
+      id: '/example'
+      path: '/example'
+      fullPath: '/example'
+      preLoaderRoute: typeof ExampleRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cotizador': {
@@ -88,6 +105,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CotizadorRoute: CotizadorRoute,
+  ExampleRoute: ExampleRoute,
   GestionRoute: GestionRoute,
 }
 export const routeTree = rootRouteImport
