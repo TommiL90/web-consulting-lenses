@@ -1,4 +1,4 @@
-"use client";
+"use no memo";
 
 import type { Row } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
@@ -7,18 +7,10 @@ import {
 	DropdownMenu,
 	DropdownMenuContent,
 	DropdownMenuItem,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
 	DropdownMenuSeparator,
 	DropdownMenuShortcut,
-	DropdownMenuSub,
-	DropdownMenuSubContent,
-	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-
-import { labels } from "./helpers";
-import { taskSchema } from "./schema";
 
 interface DataTableRowActionsProps<TData> {
 	row: Row<TData>;
@@ -27,7 +19,17 @@ interface DataTableRowActionsProps<TData> {
 export function DataTableRowActions<TData>({
 	row,
 }: DataTableRowActionsProps<TData>) {
-	const task = taskSchema.parse(row.original);
+	const data = row.original as { id: string };
+
+	const handleEdit = () => {
+		console.log("Edit product:", data.id);
+		// TODO: Implement edit functionality
+	};
+
+	const handleDelete = () => {
+		console.log("Delete product:", data.id);
+		// TODO: Implement delete functionality
+	};
 
 	return (
 		<DropdownMenu>
@@ -42,24 +44,9 @@ export function DataTableRowActions<TData>({
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="w-[160px]">
-				<DropdownMenuItem>Edit</DropdownMenuItem>
-				<DropdownMenuItem>Make a copy</DropdownMenuItem>
-				<DropdownMenuItem>Favorite</DropdownMenuItem>
+				<DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
 				<DropdownMenuSeparator />
-				<DropdownMenuSub>
-					<DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-					<DropdownMenuSubContent>
-						<DropdownMenuRadioGroup value={task.label}>
-							{labels.map((label) => (
-								<DropdownMenuRadioItem key={label.value} value={label.value}>
-									{label.label}
-								</DropdownMenuRadioItem>
-							))}
-						</DropdownMenuRadioGroup>
-					</DropdownMenuSubContent>
-				</DropdownMenuSub>
-				<DropdownMenuSeparator />
-				<DropdownMenuItem variant="destructive">
+				<DropdownMenuItem variant="destructive" onClick={handleDelete}>
 					Delete
 					<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
 				</DropdownMenuItem>

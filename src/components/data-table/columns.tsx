@@ -1,118 +1,181 @@
-"use client";
+"use no memo";
 
 import type { ColumnDef } from "@tanstack/react-table";
-
-import { labels, priorities, statuses } from "./helpers";
-import { Badge } from "../ui/badge";
-import { Checkbox } from "../ui/checkbox";
+import type { MappedProduct } from "@/hooks/use-products";
+import { formatCurrency } from "@/lib/formatters";
 import { DataTableColumnHeader } from "./data-table-column-header";
 import { DataTableRowActions } from "./data-table-row-actions";
-import type { Task } from "./schema";
 
-export const columns: ColumnDef<Task>[] = [
+export const columns: ColumnDef<MappedProduct>[] = [
+	// {
+	// 	accessorKey: "sku",
+	// 	header: ({ column }) => (
+	// 		<DataTableColumnHeader column={column} title="SKU" />
+	// 	),
+	// 	cell: ({ row }) => <div>{row.getValue("sku")}</div>,
+	// },
 	{
-		id: "select",
-		header: ({ table }) => (
-			<Checkbox
-				checked={
-					table.getIsAllPageRowsSelected() ||
-					(table.getIsSomePageRowsSelected() && "indeterminate")
-				}
-				onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-				aria-label="Select all"
-				className="translate-y-[2px]"
-			/>
+		accessorKey: "name",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Nombre" />
+		),
+		cell: ({ row }) => <div>{row.getValue("name")}</div>,
+		enableSorting: false,
+	},
+	{
+		accessorKey: "material",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Material" />
+		),
+		cell: ({ row }) => <div>{row.getValue("material")}</div>,
+		filterFn: (row, id, value) => {
+			return value.includes(row.getValue(id));
+		},
+	},
+	{
+		accessorKey: "tipo",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Tipo" />
+		),
+		cell: ({ row }) => <div>{row.getValue("tipo")}</div>,
+		filterFn: (row, id, value) => {
+			return value.includes(row.getValue(id));
+		},
+	},
+	{
+		accessorKey: "hasAntiReflective",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Antirreflejo" />
 		),
 		cell: ({ row }) => (
-			<Checkbox
-				checked={row.getIsSelected()}
-				onCheckedChange={(value) => row.toggleSelected(!!value)}
-				aria-label="Select row"
-				className="translate-y-[2px]"
-			/>
+			<div>{row.getValue("hasAntiReflective") ? "Sí" : "No"}</div>
 		),
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "id",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Task" />
-		),
-		cell: ({ row }) => <div className="w-[80px]">{row.getValue("id")}</div>,
-		enableSorting: false,
-		enableHiding: false,
-	},
-	{
-		accessorKey: "title",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Title" />
-		),
-		cell: ({ row }) => {
-			const label = labels.find((label) => label.value === row.original.label);
-
-			return (
-				<div className="flex gap-2">
-					{label && <Badge variant="outline">{label.label}</Badge>}
-					<span className="max-w-[500px] truncate font-medium">
-						{row.getValue("title")}
-					</span>
-				</div>
-			);
-		},
-	},
-	{
-		accessorKey: "status",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Status" />
-		),
-		cell: ({ row }) => {
-			const status = statuses.find(
-				(status) => status.value === row.getValue("status"),
-			);
-
-			if (!status) {
-				return null;
-			}
-
-			return (
-				<div className="flex w-[100px] items-center gap-2">
-					{status.icon && (
-						<status.icon className="text-muted-foreground size-4" />
-					)}
-					<span>{status.label}</span>
-				</div>
-			);
-		},
 		filterFn: (row, id, value) => {
-			return value.includes(row.getValue(id));
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
 		},
 	},
 	{
-		accessorKey: "priority",
+		accessorKey: "hasBlueFilter",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Priority" />
+			<DataTableColumnHeader column={column} title="Filtro azul" />
 		),
-		cell: ({ row }) => {
-			const priority = priorities.find(
-				(priority) => priority.value === row.getValue("priority"),
-			);
-
-			if (!priority) {
-				return null;
-			}
-
-			return (
-				<div className="flex items-center gap-2">
-					{priority.icon && (
-						<priority.icon className="text-muted-foreground size-4" />
-					)}
-					<span>{priority.label}</span>
-				</div>
-			);
-		},
+		cell: ({ row }) => <div>{row.getValue("hasBlueFilter") ? "Sí" : "No"}</div>,
 		filterFn: (row, id, value) => {
-			return value.includes(row.getValue(id));
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
+		},
+	},
+	{
+		accessorKey: "isPhotochromic",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Fotocromático" />
+		),
+		cell: ({ row }) => (
+			<div>{row.getValue("isPhotochromic") ? "Sí" : "No"}</div>
+		),
+		filterFn: (row, id, value) => {
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
+		},
+	},
+	{
+		accessorKey: "hasUVProtection",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Protección UV" />
+		),
+		cell: ({ row }) => (
+			<div>{row.getValue("hasUVProtection") ? "Sí" : "No"}</div>
+		),
+		filterFn: (row, id, value) => {
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
+		},
+	},
+	{
+		accessorKey: "isPolarized",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Polarizado" />
+		),
+		cell: ({ row }) => <div>{row.getValue("isPolarized") ? "Sí" : "No"}</div>,
+		filterFn: (row, id, value) => {
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
+		},
+	},
+	{
+		accessorKey: "isMirrored",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Espejado" />
+		),
+		cell: ({ row }) => <div>{row.getValue("isMirrored") ? "Sí" : "No"}</div>,
+		filterFn: (row, id, value) => {
+			const boolValue = row.getValue(id) as boolean;
+			return value.some((val: string) => {
+				if (val === "true") return boolValue === true;
+				if (val === "false") return boolValue === false;
+				return false;
+			});
+		},
+	},
+	{
+		accessorKey: "basePrice",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Precio base" />
+		),
+		cell: ({ row }) => <div>{formatCurrency(row.getValue("basePrice"))}</div>,
+	},
+	{
+		accessorKey: "finalPrice",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Precio final" />
+		),
+		cell: ({ row }) => <div>{formatCurrency(row.getValue("finalPrice"))}</div>,
+	},
+	{
+		accessorKey: "deliveryDays",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Días de entrega" />
+		),
+		cell: ({ row }) => <div>{row.getValue("deliveryDays")}</div>,
+	},
+	{
+		accessorKey: "observations",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Observaciones" />
+		),
+		cell: ({ row }) => <div>{row.getValue("observations") || "-"}</div>,
+	},
+	{
+		accessorKey: "prescriptionRangeCode",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Rango de prescripción" />
+		),
+		cell: ({ row }) => <div>{row.getValue("prescriptionRangeCode")}</div>,
+		filterFn: (row, id, value) => {
+			const cellValue = row.getValue(id) as string;
+			if (!value || typeof value !== "string") return true;
+			return cellValue.toLowerCase().includes(value.toLowerCase());
 		},
 	},
 	{

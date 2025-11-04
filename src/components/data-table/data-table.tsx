@@ -1,4 +1,4 @@
-"use client";
+"use no memo";
 
 import {
 	type ColumnDef,
@@ -14,7 +14,7 @@ import {
 	useReactTable,
 	type VisibilityState,
 } from "@tanstack/react-table";
-import * as React from "react";
+import { useState } from "react";
 
 import {
 	Table,
@@ -37,39 +37,34 @@ export function DataTable<TData, TValue>({
 	columns,
 	data,
 }: DataTableProps<TData, TValue>) {
-	const [rowSelection, setRowSelection] = React.useState({});
+	const [rowSelection, setRowSelection] = useState({});
 	const [columnVisibility, setColumnVisibility] =
-		React.useState<VisibilityState>({});
-	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-		[],
+	  useState<VisibilityState>({});
+	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
+	  [],
 	);
-	const [sorting, setSorting] = React.useState<SortingState>([]);
-
+	const [sorting, setSorting] = useState<SortingState>([]);
+  
 	const table = useReactTable({
-		data,
-		columns,
-		state: {
-			sorting,
-			columnVisibility,
-			rowSelection,
-			columnFilters,
-		},
-		initialState: {
-			pagination: {
-				pageSize: 25,
-			},
-		},
-		enableRowSelection: true,
-		onRowSelectionChange: setRowSelection,
-		onSortingChange: setSorting,
-		onColumnFiltersChange: setColumnFilters,
-		onColumnVisibilityChange: setColumnVisibility,
-		getCoreRowModel: getCoreRowModel(),
-		getFilteredRowModel: getFilteredRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		getSortedRowModel: getSortedRowModel(),
-		getFacetedRowModel: getFacetedRowModel(),
-		getFacetedUniqueValues: getFacetedUniqueValues(),
+	  data,
+	  columns,
+	  state: {
+		sorting,
+		columnVisibility,
+		rowSelection,
+		columnFilters,
+	  },
+	  enableRowSelection: true,
+	  onRowSelectionChange: setRowSelection,
+	  onSortingChange: setSorting,
+	  onColumnFiltersChange: setColumnFilters,
+	  onColumnVisibilityChange: setColumnVisibility,
+	  getCoreRowModel: getCoreRowModel(),
+	  getFilteredRowModel: getFilteredRowModel(),
+	  getPaginationRowModel: getPaginationRowModel(),
+	  getSortedRowModel: getSortedRowModel(),
+	  getFacetedRowModel: getFacetedRowModel(),
+	  getFacetedUniqueValues: getFacetedUniqueValues(),
 	});
 
 	return (

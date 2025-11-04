@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api-client";
+import { mapProductToFlat } from "@/lib/helpers";
 
 export interface Product {
 	id: string;
@@ -46,6 +47,7 @@ export interface PrescriptionRange {
 }
 
 export interface MappedProduct {
+	id: string;
 	sku: string;
 	name: string;
 	material: string;
@@ -85,29 +87,8 @@ export function useProducts() {
 	});
 
 	const products = response?.products
-		? response.products.map(mapProductToFlat)
+		? response.products.map((product) => mapProductToFlat(product))
 		: [];
 
 	return { products, errorProducts, isLoadingProducts };
-}
-
-function mapProductToFlat(product: Product): MappedProduct {
-	return {
-		sku: product.sku,
-		name: product.name,
-		material: product.material,
-		tipo: product.tipo,
-		hasAntiReflective: product.features.hasAntiReflective,
-		hasBlueFilter: product.features.hasBlueFilter,
-		isPhotochromic: product.features.isPhotochromic,
-		hasUVProtection: product.features.hasUVProtection,
-		isPolarized: product.features.isPolarized,
-		isMirrored: product.features.isMirrored,
-		basePrice: product.pricing.basePrice,
-		finalPrice: product.pricing.finalPrice,
-		deliveryDays: product.deliveryDays,
-		observations: product.observations,
-		prescriptionRangeCode: product.prescriptionRange.code,
-		prescriptionRangeDescription: product.prescriptionRange.description,
-	};
 }
