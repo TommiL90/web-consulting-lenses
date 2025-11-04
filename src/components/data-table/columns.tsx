@@ -27,7 +27,14 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Rango" />
 		),
-		cell: ({ row }) => <div>{row.getValue("prescriptionRangeCode")}</div>,
+		cell: ({ row }) => (
+			<div className="bg-fuchsia-300 dark:bg-fuchsia-600 text-gray-900 dark:text-white font-bold px-3 py-2 -mx-3 -my-2 rounded">
+				{row.getValue("prescriptionRangeCode")}
+			</div>
+		),
+		filterFn: (row, id, value) => {
+			return value.includes(row.getValue(id));
+		},
 	},
 	{
 		accessorKey: "material",
@@ -50,69 +57,55 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		},
 	},
 	{
-		accessorKey: "hasAntiReflective",
+		id: "hasAntiReflective",
+		accessorFn: (row) => String(row.hasAntiReflective),
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="AR" />
 		),
 		cell: ({ row }) => (
-			<div>{row.getValue("hasAntiReflective") ? "Sí" : "No"}</div>
+			<div>{row.original.hasAntiReflective ? "Sí" : "No"}</div>
 		),
 		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
+			return value.includes(row.getValue(id));
 		},
 	},
 	{
-		accessorKey: "hasBlueFilter",
+		id: "hasBlueFilter",
+		accessorFn: (row) => String(row.hasBlueFilter),
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="FA" />
 		),
-		cell: ({ row }) => <div>{row.getValue("hasBlueFilter") ? "Sí" : "No"}</div>,
+		cell: ({ row }) => (
+			<div>{row.original.hasBlueFilter ? "Sí" : "No"}</div>
+		),
 		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
+			return value.includes(row.getValue(id));
 		},
 	},
 	{
-		accessorKey: "isPhotochromic",
+		id: "isPhotochromic",
+		accessorFn: (row) => String(row.isPhotochromic),
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="FC" />
 		),
 		cell: ({ row }) => (
-			<div>{row.getValue("isPhotochromic") ? "Sí" : "No"}</div>
+			<div>{row.original.isPhotochromic ? "Sí" : "No"}</div>
 		),
 		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
+			return value.includes(row.getValue(id));
 		},
 	},
 	{
-		accessorKey: "hasUVProtection",
+		id: "hasUVProtection",
+		accessorFn: (row) => String(row.hasUVProtection),
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="UV" />
 		),
 		cell: ({ row }) => (
-			<div>{row.getValue("hasUVProtection") ? "Sí" : "No"}</div>
+			<div>{row.original.hasUVProtection ? "Sí" : "No"}</div>
 		),
 		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
+			return value.includes(row.getValue(id));
 		},
 	},
 	// {
@@ -150,14 +143,22 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Precio base" />
 		),
-		cell: ({ row }) => <div>{formatCurrency(row.getValue("basePrice"))}</div>,
+		cell: ({ row }) => (
+			<div className="bg-yellow-300 dark:bg-yellow-500 text-gray-900 dark:text-gray-900 font-bold tabular-nums px-3 py-2 -mx-3 -my-2 rounded">
+				{formatCurrency(row.getValue("basePrice"))}
+			</div>
+		),
 	},
 	{
 		accessorKey: "finalPrice",
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Precio final" />
 		),
-		cell: ({ row }) => <div>{formatCurrency(row.getValue("finalPrice"))}</div>,
+		cell: ({ row }) => (
+			<div className="bg-lime-300 dark:bg-lime-400 text-gray-900 dark:text-gray-900 font-extrabold tabular-nums px-3 py-2 -mx-3 -my-2 rounded">
+				{formatCurrency(row.getValue("finalPrice"))}
+			</div>
+		),
 	},
 	{
 		accessorKey: "observations",
@@ -165,18 +166,6 @@ export const columns: ColumnDef<MappedProduct>[] = [
 			<DataTableColumnHeader column={column} title="Observaciones" />
 		),
 		cell: ({ row }) => <div>{row.getValue("observations") || "-"}</div>,
-	},
-	{
-		accessorKey: "prescriptionRangeCode",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Rango de prescripción" />
-		),
-		cell: ({ row }) => <div>{row.getValue("prescriptionRangeCode")}</div>,
-		filterFn: (row, id, value) => {
-			const cellValue = row.getValue(id) as string;
-			if (!value || typeof value !== "string") return true;
-			return cellValue.toLowerCase().includes(value.toLowerCase());
-		},
 	},
 	{
 		id: "actions",
