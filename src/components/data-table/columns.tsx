@@ -35,6 +35,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		accessorKey: "material",
@@ -45,6 +46,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		accessorKey: "tipo",
@@ -55,6 +57,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		id: "hasAntiReflective",
@@ -68,6 +71,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		id: "hasBlueFilter",
@@ -81,6 +85,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		id: "isPhotochromic",
@@ -94,6 +99,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	{
 		id: "hasUVProtection",
@@ -107,6 +113,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		filterFn: (row, id, value) => {
 			return value.includes(row.getValue(id));
 		},
+		enableSorting: false,
 	},
 	// {
 	// 	accessorKey: "isPolarized",
@@ -166,6 +173,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 			<DataTableColumnHeader column={column} title="Observaciones" />
 		),
 		cell: ({ row }) => <div>{row.getValue("observations") || "-"}</div>,
+		enableSorting: false,
 	},
 	{
 		id: "actions",
