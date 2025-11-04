@@ -31,7 +31,7 @@ function Page() {
 					</p>
 				</div>
 			</div>
-			<DataTable data={products} columns={columns as any} />
+			<DataTable data={products} columns={columns} />
 		</div>
 	);
 }
