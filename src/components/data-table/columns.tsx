@@ -23,6 +23,13 @@ export const columns: ColumnDef<MappedProduct>[] = [
 		enableSorting: false,
 	},
 	{
+		accessorKey: "prescriptionRangeCode",
+		header: ({ column }) => (
+			<DataTableColumnHeader column={column} title="Rango" />
+		),
+		cell: ({ row }) => <div>{row.getValue("prescriptionRangeCode")}</div>,
+	},
+	{
 		accessorKey: "material",
 		header: ({ column }) => (
 			<DataTableColumnHeader column={column} title="Material" />
@@ -45,7 +52,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 	{
 		accessorKey: "hasAntiReflective",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Antirreflejo" />
+			<DataTableColumnHeader column={column} title="AR" />
 		),
 		cell: ({ row }) => (
 			<div>{row.getValue("hasAntiReflective") ? "Sí" : "No"}</div>
@@ -62,7 +69,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 	{
 		accessorKey: "hasBlueFilter",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Filtro azul" />
+			<DataTableColumnHeader column={column} title="FA" />
 		),
 		cell: ({ row }) => <div>{row.getValue("hasBlueFilter") ? "Sí" : "No"}</div>,
 		filterFn: (row, id, value) => {
@@ -77,7 +84,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 	{
 		accessorKey: "isPhotochromic",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Fotocromático" />
+			<DataTableColumnHeader column={column} title="FC" />
 		),
 		cell: ({ row }) => (
 			<div>{row.getValue("isPhotochromic") ? "Sí" : "No"}</div>
@@ -94,7 +101,7 @@ export const columns: ColumnDef<MappedProduct>[] = [
 	{
 		accessorKey: "hasUVProtection",
 		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Protección UV" />
+			<DataTableColumnHeader column={column} title="UV" />
 		),
 		cell: ({ row }) => (
 			<div>{row.getValue("hasUVProtection") ? "Sí" : "No"}</div>
@@ -108,36 +115,36 @@ export const columns: ColumnDef<MappedProduct>[] = [
 			});
 		},
 	},
-	{
-		accessorKey: "isPolarized",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Polarizado" />
-		),
-		cell: ({ row }) => <div>{row.getValue("isPolarized") ? "Sí" : "No"}</div>,
-		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
-		},
-	},
-	{
-		accessorKey: "isMirrored",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Espejado" />
-		),
-		cell: ({ row }) => <div>{row.getValue("isMirrored") ? "Sí" : "No"}</div>,
-		filterFn: (row, id, value) => {
-			const boolValue = row.getValue(id) as boolean;
-			return value.some((val: string) => {
-				if (val === "true") return boolValue === true;
-				if (val === "false") return boolValue === false;
-				return false;
-			});
-		},
-	},
+	// {
+	// 	accessorKey: "isPolarized",
+	// 	header: ({ column }) => (
+	// 		<DataTableColumnHeader column={column} title="Polarizado" />
+	// 	),
+	// 	cell: ({ row }) => <div>{row.getValue("isPolarized") ? "Sí" : "No"}</div>,
+	// 	filterFn: (row, id, value) => {
+	// 		const boolValue = row.getValue(id) as boolean;
+	// 		return value.some((val: string) => {
+	// 			if (val === "true") return boolValue === true;
+	// 			if (val === "false") return boolValue === false;
+	// 			return false;
+	// 		});
+	// 	},
+	// },
+	// {
+	// 	accessorKey: "isMirrored",
+	// 	header: ({ column }) => (
+	// 		<DataTableColumnHeader column={column} title="Espejado" />
+	// 	),
+	// 	cell: ({ row }) => <div>{row.getValue("isMirrored") ? "Sí" : "No"}</div>,
+	// 	filterFn: (row, id, value) => {
+	// 		const boolValue = row.getValue(id) as boolean;
+	// 		return value.some((val: string) => {
+	// 			if (val === "true") return boolValue === true;
+	// 			if (val === "false") return boolValue === false;
+	// 			return false;
+	// 		});
+	// 	},
+	// },
 	{
 		accessorKey: "basePrice",
 		header: ({ column }) => (
@@ -151,13 +158,6 @@ export const columns: ColumnDef<MappedProduct>[] = [
 			<DataTableColumnHeader column={column} title="Precio final" />
 		),
 		cell: ({ row }) => <div>{formatCurrency(row.getValue("finalPrice"))}</div>,
-	},
-	{
-		accessorKey: "deliveryDays",
-		header: ({ column }) => (
-			<DataTableColumnHeader column={column} title="Días de entrega" />
-		),
-		cell: ({ row }) => <div>{row.getValue("deliveryDays")}</div>,
 	},
 	{
 		accessorKey: "observations",

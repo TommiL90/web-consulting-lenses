@@ -13,6 +13,24 @@ import {
 	DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
 
+const dictionaryNames = {
+	sku: "SKU",
+	name: "Nombre",
+	material: "Material",
+	tipo: "Tipo",
+	hasAntiReflective: "Antirreflejo",
+	hasBlueFilter: "Filtro Azul",
+	isPhotochromic: "Fotocromático",
+	hasUVProtection: "Protección UV",
+	isPolarized: "Polarizado",
+	isMirrored: "Espejado",
+	basePrice: "Precio Base",
+	finalPrice: "Precio Final",
+	deliveryDays: "Días de Entrega",
+	observations: "Observaciones",
+	prescriptionRangeCode: "Rango de Prescripción",
+} as const;
+
 export function DataTableViewOptions<TData>({
 	table,
 }: {
@@ -27,11 +45,11 @@ export function DataTableViewOptions<TData>({
 					className="ml-auto hidden h-8 lg:flex"
 				>
 					<Settings2 />
-					View
+					Vista
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-[150px]">
-				<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
+			<DropdownMenuContent align="end" className="w-[200px]">
+				<DropdownMenuLabel>Mostrar/Ocultar columnas</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				{table
 					.getAllColumns()
@@ -43,11 +61,11 @@ export function DataTableViewOptions<TData>({
 						return (
 							<DropdownMenuCheckboxItem
 								key={column.id}
-								className="capitalize"
 								checked={column.getIsVisible()}
 								onCheckedChange={(value) => column.toggleVisibility(!!value)}
 							>
-								{column.id}
+								{dictionaryNames[column.id as keyof typeof dictionaryNames] ??
+									column.id}
 							</DropdownMenuCheckboxItem>
 						);
 					})}
