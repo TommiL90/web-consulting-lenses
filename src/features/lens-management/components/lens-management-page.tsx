@@ -1,14 +1,5 @@
 import { useMemo, useState } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  getPaginationRowModel,
-  type ColumnDef,
-  type PaginationState,
-  useReactTable,
-} from "@tanstack/react-table";
 import { toast } from "sonner";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,15 +18,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Sheet,
   SheetContent,
@@ -43,14 +25,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { DataTable } from "@/components/data-table/data-table";
+import { columns } from "@/components/data-table/columns";
+import { DataTableRowActions } from "@/components/data-table/data-table-row-actions";
+import { mapProductToFlat } from "@/lib/helpers";
 import {
   FRAME_TYPES,
-  FRAME_TYPE_LABELS,
-  LENS_FEATURES,
   LENS_MATERIALS,
   LENS_TYPES,
-  MATERIAL_LABELS,
-  LENS_TYPE_LABELS,
 } from "@/features/lenses/constants";
 import {
   useCreateLensProductMutation,
@@ -61,14 +43,11 @@ import {
 } from "@/features/lenses/api/hooks";
 import type {
   LensProduct,
-  LensFeatureKey,
-  PrescriptionRange,
 } from "@/features/lenses/types";
 import type { LensProductFormValues } from "@/features/lenses/schemas";
 import { LensProductForm } from "@/features/lens-management/components/lens-product-form";
-import { formatCurrency, formatDeliveryDays } from "@/lib/formatters";
 import { isApiError } from "@/lib/api-client";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus } from "lucide-react";
 
 type SheetState =
   | {
@@ -80,17 +59,6 @@ type SheetState =
       product: LensProduct;
       initialValues: Partial<LensProductFormValues>;
     };
-
-const FEATURE_LOOKUP: Record<
-  LensFeatureKey,
-  (typeof LENS_FEATURES)[number]
-> = LENS_FEATURES.reduce(
-  (acc, feature) => {
-    acc[feature.key] = feature;
-    return acc;
-  },
-  {} as Record<LensFeatureKey, (typeof LENS_FEATURES)[number]>,
-);
 
 const INITIAL_FORM_VALUES: Partial<LensProductFormValues> = {
   sku: "",
@@ -149,195 +117,49 @@ function mapProductToFormValues(product: LensProduct): Partial<LensProductFormVa
 }
 
 export function LensManagementPage() {
-  const [filters, setFilters] = useState({ search: "", sku: "" });
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  });
   const [sheetState, setSheetState] = useState<SheetState | null>(null);
   const [productToDelete, setProductToDelete] = useState<LensProduct | null>(null);
 
-  const { data: products = [], isLoading, error: productsError } = useLensProductsQuery();
+  const { data: lensProducts = [], isLoading, error: productsError } = useLensProductsQuery();
   const { data: ranges = [], isLoading: rangesLoading } = usePrescriptionRangesQuery();
+
+  const products = useMemo(() => {
+    return lensProducts.map((product) => mapProductToFlat(product));
+  }, [lensProducts]);
 
   const createMutation = useCreateLensProductMutation();
   const updateMutation = useUpdateLensProductMutation();
   const deleteMutation = useDeleteLensProductMutation();
 
-  const rangeById = useMemo(() => {
-    return ranges.reduce<Record<string, PrescriptionRange>>((acc, range) => {
-      acc[range.id] = range;
-      return acc;
-    }, {});
-  }, [ranges]);
-
-  const filteredData = useMemo(() => {
-    const normalizedSearch = filters.search.trim().toLowerCase();
-    const normalizedSku = filters.sku.trim().toLowerCase();
-
-    return products.filter((product) => {
-      const matchesName =
-        normalizedSearch.length === 0 ||
-        product.name.toLowerCase().includes(normalizedSearch);
-      const matchesSku =
-        normalizedSku.length === 0 ||
-        product.sku.toLowerCase().includes(normalizedSku);
-      return matchesName && matchesSku;
-    });
-  }, [filters.search, filters.sku, products]);
-
-  const columns = useMemo<ColumnDef<LensProduct>[]>(
-    () => [
-      {
-        header: "Producto",
-        accessorKey: "name",
-        cell: ({ row }) => {
-          const product = row.original;
-          const activeFeatures = Object.entries(
-            product.features,
-          ).filter(([_, value]) => value === true) as Array<
-            [LensFeatureKey, true]
-          >;
-
-          return (
-            <div className="flex flex-col gap-2">
-              <div>
-                <p className="font-medium text-sm">{product.name}</p>
-                <p className="text-xs text-muted-foreground">{product.sku}</p>
-              </div>
-              {activeFeatures.length ? (
-                <div className="flex flex-wrap gap-1">
-                  {activeFeatures.map(([key]) => (
-                    <Badge key={key} variant="secondary">
-                      {FEATURE_LOOKUP[key].label}
-                    </Badge>
-                  ))}
-                </div>
-              ) : null}
-            </div>
-          );
-        },
-      },
-      {
-        header: "Material",
-        accessorKey: "material",
-        cell: ({ getValue }) => (
-          <span className="text-sm font-medium">
-            {MATERIAL_LABELS[getValue() as keyof typeof MATERIAL_LABELS]}
-          </span>
-        ),
-      },
-      {
-        header: "Tipo",
-        accessorKey: "tipo",
-        cell: ({ getValue }) => (
-          <span className="text-sm">
-            {LENS_TYPE_LABELS[getValue() as keyof typeof LENS_TYPE_LABELS]}
-          </span>
-        ),
-      },
-      {
-        header: "Marco",
-        accessorKey: "frameType",
-        cell: ({ getValue }) => (
-          <span className="text-sm">
-            {FRAME_TYPE_LABELS[getValue() as keyof typeof FRAME_TYPE_LABELS]}
-          </span>
-        ),
-      },
-      {
-        header: "Precio final",
-        accessorFn: (row) => row.pricing.finalPrice,
-        cell: ({ getValue, row }) => (
-          <div className="flex flex-col text-sm font-medium">
-            <span>{formatCurrency(getValue<number>())}</span>
-            <span className="text-xs text-muted-foreground">
-              Base {formatCurrency(row.original.pricing.basePrice)}
-            </span>
-          </div>
-        ),
-      },
-      {
-        header: "Entrega",
-        accessorKey: "deliveryDays",
-        cell: ({ getValue }) => (
-          <span className="text-sm">{formatDeliveryDays(getValue<number>())}</span>
-        ),
-      },
-      {
-        header: "Rango",
-        accessorKey: "prescriptionRangeId",
-        cell: ({ getValue }) => {
-          const rangeId = getValue<string>();
-          const range = rangeById[rangeId];
-          return (
-            <span className="text-sm font-medium">
-              {range ? `${range.code}` : "—"}
-            </span>
-          );
-        },
-      },
-      {
-        header: "Estado",
-        accessorKey: "available",
-        cell: ({ getValue }) => {
-          const available = getValue<boolean>();
-          return available ? (
-            <Badge className="w-fit" variant="secondary">
-              Disponible
-            </Badge>
-          ) : (
-            <Badge className="w-fit" variant="outline">
-              Pausado
-            </Badge>
-          );
-        },
-      },
-      {
-        header: "Acciones",
-        id: "actions",
-        cell: ({ row }) => {
-          const product = row.original;
-          return (
-            <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={() =>
+  const managementColumns = useMemo(() => {
+    return columns.map((col) => {
+      if (col.id === "actions") {
+        return {
+          ...col,
+          cell: ({ row }) => (
+            <DataTableRowActions
+              row={row}
+              onEdit={(id) => {
+                const product = lensProducts.find(p => p.id === id);
+                if (product) {
                   setSheetState({
                     mode: "edit",
                     product,
                     initialValues: mapProductToFormValues(product),
-                  })
+                  });
                 }
-              >
-                <Pencil className="size-4" />
-                <span className="sr-only">Editar</span>
-              </Button>
-              <Button
-                size="icon"
-                variant="destructive"
-                onClick={() => setProductToDelete(product)}
-              >
-                <Trash2 className="size-4" />
-                <span className="sr-only">Eliminar</span>
-              </Button>
-            </div>
-          );
-        },
-      },
-    ],
-    [rangeById],
-  );
-
-  const table = useReactTable({
-    data: filteredData,
-    columns,
-    state: { pagination },
-    onPaginationChange: setPagination,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  });
+              }}
+              onDelete={(id) => {
+                const product = lensProducts.find(p => p.id === id);
+                if (product) setProductToDelete(product);
+              }}
+            />
+          ),
+        };
+      }
+      return col;
+    });
+  }, [columns, lensProducts]);
 
   const isSubmitting =
     createMutation.isPending || updateMutation.isPending;
@@ -395,14 +217,6 @@ export function LensManagementPage() {
     }
   };
 
-  const totalRows = filteredData.length;
-  const totalProducts = products.length;
-  const pageFrom = pagination.pageIndex * pagination.pageSize + 1;
-  const pageTo = Math.min(
-    (pagination.pageIndex + 1) * pagination.pageSize,
-    totalRows,
-  );
-
   const disableCreate = rangesLoading || ranges.length === 0;
 
   return (
@@ -422,133 +236,40 @@ export function LensManagementPage() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-col gap-2">
+        <CardHeader>
           <CardTitle>Listado de productos</CardTitle>
           <CardDescription>
-            Usa los filtros rápidos para encontrar productos por nombre o SKU.
+            Usa los filtros de la tabla para encontrar productos específicos.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Input
-              placeholder="Buscar por nombre..."
-              value={filters.search}
-              onChange={(event) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  search: event.target.value,
-                }))
-              }
-            />
-            <Input
-              placeholder="Buscar por SKU..."
-              value={filters.sku}
-              onChange={(event) =>
-                setFilters((prev) => ({
-                  ...prev,
-                  sku: event.target.value,
-                }))
-              }
-            />
-          </div>
-
-          <div className="rounded-lg border">
-            {isLoading ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-                <Loader2 className="size-6 animate-spin text-primary" />
-                <p className="font-medium">Cargando productos...</p>
-              </div>
-            ) : productsError ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-                <p className="font-medium text-destructive">
-                  Error al cargar los productos
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {getErrorMessage(
-                    productsError,
-                    "Hubo un problema al cargar el listado.",
-                  )}
-                </p>
-              </div>
-            ) : totalProducts === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-                <p className="font-medium">Aún no hay productos cargados.</p>
-                <p className="text-sm text-muted-foreground">
-                  Usa el botón “Agregar nuevo lente” para cargar el primer
-                  producto.
-                </p>
-              </div>
-            ) : totalRows === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
-                <p className="font-medium">Sin resultados</p>
-                <p className="text-sm text-muted-foreground">
-                  Ajusta los filtros o limpia la búsqueda para ver más
-                  productos.
-                </p>
-              </div>
-            ) : (
-              <>
-                <Table>
-                  <TableHeader>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <TableRow key={headerGroup.id}>
-                        {headerGroup.headers.map((header) => (
-                          <TableHead
-                            key={header.id}
-                            className="text-xs font-semibold uppercase tracking-wide text-muted-foreground"
-                          >
-                            {header.isPlaceholder
-                              ? null
-                              : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext(),
-                                )}
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableHeader>
-                  <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell key={cell.id} className="align-top">
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-                <div className="flex flex-col items-start justify-between gap-3 border-t px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center">
-                  <span>
-                    Mostrando {pageFrom} – {pageTo} de {totalRows} productos
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                    >
-                      Anterior
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                    >
-                      Siguiente
-                    </Button>
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+              <Loader2 className="size-6 animate-spin text-primary" />
+              <p className="font-medium">Cargando productos...</p>
+            </div>
+          ) : productsError ? (
+            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+              <p className="font-medium text-destructive">
+                Error al cargar los productos
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {getErrorMessage(
+                  productsError,
+                  "Hubo un problema al cargar el listado.",
+                )}
+              </p>
+            </div>
+          ) : lensProducts.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-3 p-10 text-center">
+              <p className="font-medium">Aún no hay productos cargados.</p>
+              <p className="text-sm text-muted-foreground">
+                Usa el botón "Agregar nuevo lente" para cargar el primer producto.
+              </p>
+            </div>
+          ) : (
+            <DataTable data={products} columns={managementColumns} />
+          )}
         </CardContent>
       </Card>
 

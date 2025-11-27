@@ -14,21 +14,23 @@ import {
 
 interface DataTableRowActionsProps<TData> {
 	row: Row<TData>;
+	onEdit?: (id: string) => void;
+	onDelete?: (id: string) => void;
 }
 
 export function DataTableRowActions<TData>({
 	row,
+	onEdit,
+	onDelete,
 }: DataTableRowActionsProps<TData>) {
 	const data = row.original as { id: string };
 
 	const handleEdit = () => {
-		console.log("Edit product:", data.id);
-		// TODO: Implement edit functionality
+		onEdit?.(data.id);
 	};
 
 	const handleDelete = () => {
-		console.log("Delete product:", data.id);
-		// TODO: Implement delete functionality
+		onDelete?.(data.id);
 	};
 
 	return (
