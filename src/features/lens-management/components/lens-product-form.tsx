@@ -213,7 +213,6 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="1"
                       value={
                         field.value === undefined ? "" : field.value
                       }
@@ -239,7 +238,6 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="1"
                       value={
                         field.value === undefined ? "" : field.value
                       }
@@ -263,7 +261,6 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="1"
                       value={
                         field.value === undefined ? "" : field.value
                       }
