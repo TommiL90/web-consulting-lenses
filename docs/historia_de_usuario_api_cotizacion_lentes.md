@@ -155,7 +155,7 @@ Basado en las tablas del negocio, estas son las combinaciones que deben existir 
     }
   },
   "filters": {
-    "frameType": "cerrado",       // REQUERIDO: "cerrado" | "semicerrado" | "al_aire"
+    "frameType": "cerrado",       // OPCIONAL: "cerrado" | "semicerrado" | "al_aire"
     "material": "organico",        // OPCIONAL: "organico" | "policarbonato" | "mineral" | "adelgazado"
     "hasBlueFilter": true,         // OPCIONAL
     "isPhotochromic": false,       // OPCIONAL
@@ -169,8 +169,7 @@ Basado en las tablas del negocio, estas son las combinaciones que deben existir 
 **Validaciones:**
 - `prescription.od.sphere` y `prescription.od.cylinder`: números requeridos
 - `prescription.oi.sphere` y `prescription.oi.cylinder`: números requeridos
-- `filters.frameType`: string requerido (enum)
-- Todos los demás filtros son opcionales
+- Todos los filtros son opcionales (frameType ya NO es obligatorio)
 
 **Response 200:**
 ```json
@@ -273,6 +272,10 @@ Basado en las tablas del negocio, estas son las combinaciones que deben existir 
   ]
 }
 ```
+
+> **Actualización 2025-11-27**: El campo `frameType` es ahora opcional en la API.
+> El frontend puede omitir el envío de filtros completamente y aplicarlos
+> localmente sobre los resultados devueltos.
 
 ### 1.5 Algoritmo de Resolución (Backend)
 
@@ -995,7 +998,7 @@ export function LensProductCard({ product }: LensProductCardProps) {
 ### Backend
 - [ ] La API normaliza valores correctamente (3.76 → 3.75)
 - [ ] Encuentra el `PrescriptionRange` correcto para cada receta
-- [ ] Filtra productos según `frameType` (requerido) y filtros opcionales
+- [ ] Filtra productos según filtros opcionales (frameType, material, tipo, características)
 - [ ] Devuelve productos ordenados por precio ascendente
 - [ ] Maneja errores: rango no encontrado, validación fallida
 - [ ] Incluye trazabilidad en la respuesta (prescripción original y normalizada)

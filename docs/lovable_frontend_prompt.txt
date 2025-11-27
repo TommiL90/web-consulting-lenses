@@ -31,15 +31,13 @@ La interfaz debe ser moderna, limpia y profesional, utilizando **shadcn/ui** par
 
 Esta vista permite a los vendedores generar cotizaciones rápidamente.
 
-### 4.1. Formulario de Prescripción y Filtros
+### 4.1. Formulario de Prescripción (Simplificado)
 
 - **Librerías:** Usar **React Hook Form** y **Zod**.
-- **Componentes:** Utilizar **shadcn/ui** (`Card`, `Input`, `Select`, `Checkbox`, `Button`).
+- **Componentes:** Utilizar **shadcn/ui** (`Card`, `Input`, `Button`).
 - **Estructura:**
     - **Sección de Prescripción:** Dos subsecciones, "Ojo Derecho (OD)" y "Ojo Izquierdo (OI)", cada una con campos `Input` numéricos para "Esfera" y "Cilindro" (`step="0.25"`).
-    - **Sección de Filtros:**
-        - **Tipo de Armazón (Requerido):** `Select` o `RadioGroup` ("Cerrado", "Semicerrado", "Al Aire").
-        - **Filtros Opcionales:** `Select` para "Material" y "Tipo de Lente", y `Checkbox` para características booleanas (Antirreflejo, Filtro Azul, etc.).
+    - **Sin filtros en formulario:** Los filtros se aplican después de obtener resultados, directamente en la tabla usando DataTable integrado.
     - **Botón de Acción:** `Button` "Cotizar Lentes" con estado de carga.
 
 ### 4.2. Sección de Resultados
@@ -47,16 +45,30 @@ Esta vista permite a los vendedores generar cotizaciones rápidamente.
 - **Librería:** Usar **Tanstack Table** con componentes de tabla de **shadcn/ui**.
 - **Estructura:**
     - **Meta Información:** Un `Card` o `Alert` mostrando el rango de prescripción usado y el total de resultados.
-    - **Tabla de Productos:**
-        - **Columnas:** Nombre, SKU, Material, Características (con `Badge`), Precio Final, Días de Entrega, Observaciones.
-        - **Ordenamiento:** Ordenable por precio por defecto.
+    - **Tabla de Productos (usando DataTable reutilizable):**
+        - **Componente:** DataTable de /src/components/data-table/
+        - **Columnas:** Nombre, SKU, Material, Tipo, Características (con `Badge`), Precio Final, Días de Entrega, Observaciones.
+        - **Filtrado:** DataTableToolbar con filtros facetados para Material, Tipo, Características booleanas (AR, FA, FC, UV, Polarizado, Espejado).
+        - **Búsqueda:** Input de búsqueda por nombre de producto.
+        - **Ordenamiento:** Columnas ordenables (especialmente precio final).
+        - **Paginación:** Integrada en DataTable.
+        - **Column Visibility:** Control de visibilidad de columnas.
     - **Manejo de Estados:** Mostrar mensajes claros para el estado inicial, sin resultados o errores de API.
 
 ### 4.3. Integración con API (Cotización)
 
 - **Endpoint:** `POST /api/lenses/quote`.
 - **Hook:** Usar `useMutation` de Tanstack Query para manejar el envío del formulario.
-- **Payload:** El cuerpo de la solicitud debe coincidir con la estructura definida en la historia de usuario.
+- **Payload:** El cuerpo de la solicitud solo incluye prescription:
+  ```json
+  {
+    "prescription": {
+      "od": { "sphere": -3.75, "cylinder": -2.00 },
+      "oi": { "sphere": -4.00, "cylinder": -2.00 }
+    }
+  }
+  ```
+- **Nota Importante:** Los filtros NO se envían al backend. La API devuelve TODOS los productos compatibles con la receta, y el filtrado se realiza en el cliente usando las capacidades integradas de DataTable.
 
 ## 5. Funcionalidad #2: Página de Gestión de Lentes (CRUD)
 
