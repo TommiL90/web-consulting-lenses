@@ -121,7 +121,7 @@ export const quoteColumns: ColumnDef<MappedProduct>[] = [
 			<DataTableColumnHeader column={column} title="Observaciones" />
 		),
 		cell: ({ row }) => {
-			const value = row.getValue("observations");
+			const value = row.getValue("observations") as string | null | undefined;
 			if (!value) {
 				return (
 					<span className="text-muted-foreground text-xs">

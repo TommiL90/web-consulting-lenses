@@ -25,6 +25,7 @@ import { quoteColumns } from "./quote-columns";
 import { useQuoteLensesData } from "@/features/lens-quoting/api/use-quote-lenses";
 import {
 	type QuoteFormValues,
+	type QuoteFormFields,
 	quoteFormSchema,
 } from "@/features/lens-quoting/schemas";
 import { isApiError } from "@/lib/api-client";
@@ -44,14 +45,28 @@ function getQuoteErrorMessage(error: unknown) {
 	return "No pudimos generar la cotización. Intenta nuevamente.";
 }
 
+function getFieldDisplayValue(value: unknown) {
+	if (value === undefined || value === null) {
+		return "";
+	}
+
+	if (typeof value === "number") {
+		return Number.isNaN(value) ? "" : value;
+	}
+
+	if (typeof value === "string") {
+		return value;
+	}
+
+	return "";
+}
+
 export function LensQuotePage() {
 	const [hasSubmitted, setHasSubmitted] = useState(false);
 	const { products, meta, isPending, error, mutate } = useQuoteLensesData();
 
-	const resolver = zodResolver(quoteFormSchema);
-
-	const form = useForm<QuoteFormValues>({
-		resolver,
+	const form = useForm<QuoteFormFields, unknown, QuoteFormValues>({
+		resolver: zodResolver(quoteFormSchema),
 		defaultValues: {
 			prescription: {
 				od: { sphere: undefined, cylinder: undefined },
@@ -139,12 +154,7 @@ export function LensQuotePage() {
 																}}
 																step={0.25}
 																type="text"
-																value={
-																	field.value === undefined ||
-																	Number.isNaN(field.value)
-																		? ""
-																		: field.value
-																}
+																value={getFieldDisplayValue(field.value)}
 															/>
 														</FormControl>
 														<FormMessage />
@@ -185,12 +195,7 @@ export function LensQuotePage() {
 																}}
 																step={0.25}
 																type="text"
-																value={
-																	field.value === undefined ||
-																	Number.isNaN(field.value)
-																		? ""
-																		: field.value
-																}
+																value={getFieldDisplayValue(field.value)}
 															/>
 														</FormControl>
 														<FormMessage />
@@ -239,12 +244,7 @@ export function LensQuotePage() {
 																}}
 																step={0.25}
 																type="text"
-																value={
-																	field.value === undefined ||
-																	Number.isNaN(field.value)
-																		? ""
-																		: field.value
-																}
+																value={getFieldDisplayValue(field.value)}
 															/>
 														</FormControl>
 														<FormMessage />
@@ -285,12 +285,7 @@ export function LensQuotePage() {
 																}}
 																step={0.25}
 																type="text"
-																value={
-																	field.value === undefined ||
-																	Number.isNaN(field.value)
-																		? ""
-																		: field.value
-																}
+																value={getFieldDisplayValue(field.value)}
 															/>
 														</FormControl>
 														<FormMessage />

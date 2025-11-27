@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import type { Row } from "@tanstack/react-table";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -48,6 +49,7 @@ import type { LensProductFormValues } from "@/features/lenses/schemas";
 import { LensProductForm } from "@/features/lens-management/components/lens-product-form";
 import { isApiError } from "@/lib/api-client";
 import { Loader2, Plus } from "lucide-react";
+import type { MappedProduct } from "@/hooks/use-products";
 
 type SheetState =
   | {
@@ -136,7 +138,7 @@ export function LensManagementPage() {
       if (col.id === "actions") {
         return {
           ...col,
-          cell: ({ row }) => (
+          cell: ({ row }: { row: Row<MappedProduct> }) => (
             <DataTableRowActions
               row={row}
               onEdit={(id) => {

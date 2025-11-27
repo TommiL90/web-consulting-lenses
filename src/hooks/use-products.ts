@@ -12,7 +12,7 @@ export interface Product {
 	features: Features;
 	pricing: Pricing;
 	deliveryDays: number;
-	observations: string;
+	observations: string | null;
 	available: boolean;
 	prescriptionRangeId: string;
 	createdAt: string;

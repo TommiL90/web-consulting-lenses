@@ -34,6 +34,7 @@ export type LensProduct = {
   observations: string | null;
   available: boolean;
   prescriptionRangeId: string;
+  prescriptionRange: PrescriptionRange;
   createdAt: string;
   updatedAt: string;
 };

@@ -189,7 +189,6 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="100"
                       value={field.value ?? ""}
                       onChange={(event) => field.onChange(event.target.value)}
                     />
@@ -214,7 +213,7 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="100"
+                      step="1"
                       value={
                         field.value === undefined ? "" : field.value
                       }
@@ -240,7 +239,7 @@ export function LensProductForm({
                       type="number"
                       inputMode="numeric"
                       min={0}
-                      step="100"
+                      step="1"
                       value={
                         field.value === undefined ? "" : field.value
                       }

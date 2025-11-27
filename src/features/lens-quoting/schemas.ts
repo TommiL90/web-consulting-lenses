@@ -38,3 +38,4 @@ export const quoteFormSchema = z.object({
 });
 
 export type QuoteFormValues = z.infer<typeof quoteFormSchema>;
+export type QuoteFormFields = z.input<typeof quoteFormSchema>;

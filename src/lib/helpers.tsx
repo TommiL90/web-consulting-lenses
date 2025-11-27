@@ -16,7 +16,7 @@ export function mapProductToFlat(product: Product): MappedProduct {
 		basePrice: product.pricing.basePrice,
 		finalPrice: product.pricing.finalPrice,
 		deliveryDays: product.deliveryDays,
-		observations: product.observations,
+		observations: product.observations ?? "",
 		prescriptionRangeCode: product.prescriptionRange.code,
 		prescriptionRangeDescription: product.prescriptionRange.description,
 	};

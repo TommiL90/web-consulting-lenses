@@ -3,7 +3,6 @@ import { apiFetch } from "@/lib/api-client";
 import type {
 	QuoteResponse,
 	LensProduct,
-	Prescription,
 } from "@/features/lenses/types";
 import type { QuoteFormValues } from "../schemas";
 import type { MappedProduct } from "@/hooks/use-products";
