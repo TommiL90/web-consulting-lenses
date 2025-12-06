@@ -248,12 +248,6 @@ export function LensManagementPage() {
 					<CardTitle>Listado de productos</CardTitle>
 					<CardDescription>
 						Usa los filtros de la tabla para encontrar productos específicos.
-
-            <pre>
-              <code>
-                {JSON.stringify(ranges, null, 2)}
-              </code>
-            </pre>
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
